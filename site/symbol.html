@@ -26,6 +26,13 @@ h1 { font-size:1.3rem; margin:0; }
 .s4 { color:var(--blue); background:color-mix(in srgb,var(--blue) 14%,transparent); }
 .s0 { color:var(--mut); background:transparent; border:1px solid var(--ring); }
 .meta { color:var(--ink2); font-size:.8rem; }
+.facts { display:grid; grid-template-columns:repeat(6,1fr); gap:6px; margin:10px 0 2px; }
+@media (max-width:640px){ .facts { grid-template-columns:repeat(3,1fr); } }
+.fact { background:var(--surface); border:1px solid var(--ring); border-radius:8px;
+  padding:5px 8px; }
+.fact .l { font-size:.62rem; color:var(--mut); text-transform:uppercase;
+  letter-spacing:.03em; }
+.fact .v { font-size:.85rem; font-weight:650; font-variant-numeric:tabular-nums; }
 .tabs { display:flex; gap:6px; margin:10px 0; flex-wrap:wrap; }
 .tab { border:1px solid var(--ring); background:var(--surface); color:var(--ink2);
   border-radius:8px; padding:6px 12px; font-size:.85rem; font-weight:600; cursor:pointer; }
@@ -48,6 +55,7 @@ h1 { font-size:1.3rem; margin:0; }
   <span id="stage" class="badge s0"></span>
   <span id="meta" class="meta"></span>
 </div>
+<div class="facts" id="facts"></div>
 <div class="tabs" id="tabs"><button class="tab fsbtn" id="fsbtn" title="Fullscreen">&#x26F6; Full</button></div>
 <div id="chart"></div>
 <div class="note">Bollinger &middot; MACD &middot; EWO &middot; RSI &middot; MFI &middot;
@@ -104,6 +112,26 @@ fetch("charts/" + T + ".json").then(r => {
       (s.dd != null ? " · " + (s.dd > 0 ? "+" : "") + s.dd + "% vs 52w peak" : "") +
       " · " + data.group + " · " + (data.quality ? "quality" : "spec");
   }
+  // ---- stat row
+  const F = data.facts || {};
+  const big = v => v == null ? "—"
+    : v >= 1e12 ? (v/1e12).toFixed(2)+"T"
+    : v >= 1e9 ? (v/1e9).toFixed(1)+"B"
+    : v >= 1e6 ? (v/1e6).toFixed(0)+"M" : Math.round(v).toLocaleString();
+  const num = (v,d=1) => v == null ? "—" : (+v).toFixed(d);
+  const pct = v => v == null ? "—" : (v*100).toFixed(1)+"%";
+  const dc = (F.debt != null && F.cash) ? num(F.debt/F.cash,1) : "—";
+  const range52 = (F.lo52 != null && F.hi52 != null)
+    ? big(F.lo52)+"–"+big(F.hi52) : "—";
+  const factDefs = [
+    ["Mkt cap", big(F.mcap)], ["P/E", num(F.pe)], ["Fwd P/E", num(F.fpe)],
+    ["P/S", num(F.ps)], ["Profit mgn", pct(F.pm)], ["Rev growth", pct(F.revg)],
+    ["FCF", big(F.fcf)], ["Debt/Cash", dc], ["Beta", num(F.beta,2)],
+    ["Short %", pct(F.short)], ["$Vol 20d", big(F.advol)], ["52w range", range52],
+  ];
+  document.getElementById("facts").innerHTML = factDefs.map(([l,v]) =>
+    '<div class="fact"><div class="l">'+l+'</div><div class="v">'+v+"</div></div>").join("");
+
   const tabsEl = document.getElementById("tabs");
   const avail = TAB_DEFS.filter(([k]) => data.tabs[k]);
   let active = data.tabs["d1"] ? "d1" : (avail[0] && avail[0][0]);
