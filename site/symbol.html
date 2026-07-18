@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VBT · Symbol</title>
+<script src="echarts.min.js"></script>
+<style>
+:root { color-scheme: light;
+  --surface:#fcfcfb; --plane:#f9f9f7; --ink:#0b0b0b; --ink2:#52514e; --mut:#898781;
+  --grid:#e1e0d9; --ring:rgba(11,11,11,.10);
+  --good:#0ca30c; --warn:#fab219; --crit:#d03b3b; --blue:#2a78d6; }
+@media (prefers-color-scheme: dark) { :root { color-scheme: dark;
+  --surface:#1a1a19; --plane:#0d0d0d; --ink:#ffffff; --ink2:#c3c2b7;
+  --grid:#2c2c2a; --ring:rgba(255,255,255,.10); --blue:#3987e5; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--plane); color:var(--ink);
+  font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif; }
+.wrap { max-width:960px; margin:0 auto; padding:12px; }
+.top { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+.back { color:var(--mut); text-decoration:none; font-size:.85rem; }
+h1 { font-size:1.3rem; margin:0; }
+.badge { font-size:.72rem; font-weight:700; padding:2px 8px; border-radius:999px; }
+.s3 { color:var(--good); background:color-mix(in srgb,var(--good) 14%,transparent); }
+.s2 { color:var(--warn); background:color-mix(in srgb,var(--warn) 14%,transparent); }
+.s1 { color:var(--crit); background:color-mix(in srgb,var(--crit) 14%,transparent); }
+.s4 { color:var(--blue); background:color-mix(in srgb,var(--blue) 14%,transparent); }
+.s0 { color:var(--mut); background:transparent; border:1px solid var(--ring); }
+.meta { color:var(--ink2); font-size:.8rem; }
+.tabs { display:flex; gap:6px; margin:10px 0; flex-wrap:wrap; }
+.tab { border:1px solid var(--ring); background:var(--surface); color:var(--ink2);
+  border-radius:8px; padding:6px 12px; font-size:.85rem; font-weight:600; cursor:pointer; }
+.tab.active { color:var(--ink); border-color:var(--blue);
+  background:color-mix(in srgb,var(--blue) 12%,transparent); }
+#chart { width:100%; height:840px; background:var(--surface);
+  border:1px solid var(--ring); border-radius:10px; }
+.note { color:var(--mut); font-size:.72rem; margin-top:8px; }
+.err { color:var(--crit); padding:20px; }
+#chart.fs { position:fixed; inset:0; z-index:50; height:100vh !important;
+  width:100vw; border-radius:0; border:none; }
+.fsbtn { margin-left:auto; }
+.fsbtn.active { position:fixed; top:10px; right:10px; z-index:60;
+  background:var(--surface); }
+@media (max-width:640px){ #chart { height:780px; } }
+</style></head><body><div class="wrap">
+<div class="top">
+  <a class="back" href="index.html">&larr; Tracker</a>
+  <h1 id="tk">…</h1>
+  <span id="stage" class="badge s0"></span>
+  <span id="meta" class="meta"></span>
+</div>
+<div class="tabs" id="tabs"><button class="tab fsbtn" id="fsbtn" title="Fullscreen">&#x26F6; Full</button></div>
+<div id="chart"></div>
+<div class="note">Bollinger &middot; MACD &middot; EWO &middot; RSI &middot; MFI &middot;
+&#9650;&#9660; = confirmed swing pivots (1h/D/W/M) &middot;
+EOD data, refreshed each market close &middot; not investment advice</div>
+</div>
+<script>
+const TAB_DEFS = [
+  ["m5","5m · 1W"], ["h1","1h · 1M"], ["d1","D · 1Y"],
+  ["w1","W · 10Y"], ["mo1","M · 25Y"]];
+const STAGE_CLS = {0:"s0",1:"s1",2:"s2",3:"s3",4:"s4"};
+const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+const C = dark
+  ? {ink:"#ffffff", ink2:"#c3c2b7", mut:"#898781", grid:"#2c2c2a",
+     up:"#0ca30c", dn:"#d03b3b", bb:"rgba(120,160,255,.55)", bbmid:"rgba(195,194,183,.6)",
+     macd:"#3987e5", sig:"#fab219", rsi:"#a855f7", mfi:"#22d3ee", surface:"#1a1a19"}
+  : {ink:"#0b0b0b", ink2:"#52514e", mut:"#898781", grid:"#e1e0d9",
+     up:"#0ca30c", dn:"#d03b3b", bb:"rgba(42,120,214,.5)", bbmid:"rgba(82,81,78,.5)",
+     macd:"#2a78d6", sig:"#c98500", rsi:"#7c3aed", mfi:"#0e7490", surface:"#fcfcfb"};
+
+if (typeof echarts === "undefined") {
+  document.getElementById("chart").outerHTML =
+    '<div class="err">Chart library failed to load (echarts.min.js missing/blocked).</div>';
+  throw new Error("echarts not loaded");
+}
+const qs = new URLSearchParams(location.search);
+const T = (qs.get("t") || "").toUpperCase().replace(/[^A-Z0-9.-]/g, "");
+document.getElementById("tk").textContent = T || "?";
+document.title = "VBT · " + T;
+const chart = echarts.init(document.getElementById("chart"),
+  null, {renderer: "canvas"});
+addEventListener("resize", () => chart.resize());
+const fsbtn = document.getElementById("fsbtn");
+fsbtn.onclick = () => {
+  const el = document.getElementById("chart");
+  const on = el.classList.toggle("fs");
+  fsbtn.classList.toggle("active", on);
+  fsbtn.innerHTML = on ? "&#x2715; Close" : "&#x26F6; Full";
+  document.body.style.overflow = on ? "hidden" : "";
+  setTimeout(() => chart.resize(), 60);
+};
+
+fetch("charts/" + T + ".json").then(r => {
+  if (!r.ok) throw new Error("no data for " + T);
+  return r.json();
+}).then(data => {
+  const s = data.signal || {};
+  if (s.stage !== undefined) {
+    const el = document.getElementById("stage");
+    el.textContent = s.stage_name || "";
+    el.className = "badge " + (STAGE_CLS[s.stage] || "s0");
+    document.getElementById("meta").textContent =
+      (s.price != null ? s.price.toLocaleString() : "") +
+      (s.dd != null ? " · " + (s.dd > 0 ? "+" : "") + s.dd + "% vs 52w peak" : "") +
+      " · " + data.group + " · " + (data.quality ? "quality" : "spec");
+  }
+  const tabsEl = document.getElementById("tabs");
+  const avail = TAB_DEFS.filter(([k]) => data.tabs[k]);
+  let active = data.tabs["d1"] ? "d1" : (avail[0] && avail[0][0]);
+  for (const [k, label] of avail) {
+    const b = document.createElement("button");
+    b.className = "tab" + (k === active ? " active" : "");
+    b.textContent = label;
+    b.onclick = () => {
+      document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+      b.classList.add("active");
+      try { render(data.tabs[k], k); }
+      catch (err) {
+        chart.clear();
+        document.getElementById("tabs").insertAdjacentHTML("afterend",
+          '<div class="err">Render error on ' + label + ": " + err.message + "</div>");
+      }
+    };
+    tabsEl.appendChild(b);
+  }
+  if (active) render(data.tabs[active], active);
+}).catch(e => {
+  document.getElementById("chart").outerHTML =
+    '<div class="err">Could not load chart data: ' + e.message + "</div>";
+});
+
+function fmtTime(ts, key) {
+  const d = new Date(ts * 1000);
+  if (key === "m5" || key === "h1")
+    return (d.getMonth()+1) + "/" + d.getDate() + " " +
+      String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") +
+    "-" + String(d.getDate()).padStart(2,"0");
+}
+
+function render(tab, key) {
+  const labels = tab.bars.map(b => fmtTime(b[0], key));
+  const candles = tab.bars.map(b => [b[1], b[4], b[3], b[2]]); // o,c,l,h
+  const n = labels.length;
+  const start = n > 260 ? Math.round((1 - 260 / n) * 100) : 0;
+
+  const series = [
+    {type:"candlestick", name:"price", data:candles, xAxisIndex:0, yAxisIndex:0,
+     itemStyle:{color:C.up, color0:C.dn, borderColor:C.up, borderColor0:C.dn}},
+    {type:"line", name:"BB up", data:tab.bb.up, xAxisIndex:0, yAxisIndex:0,
+     lineStyle:{width:1, color:C.bb}, symbol:"none"},
+    {type:"line", name:"BB mid", data:tab.bb.mid, xAxisIndex:0, yAxisIndex:0,
+     lineStyle:{width:1, type:"dotted", color:C.bbmid}, symbol:"none"},
+    {type:"line", name:"BB lo", data:tab.bb.lo, xAxisIndex:0, yAxisIndex:0,
+     lineStyle:{width:1, color:C.bb}, symbol:"none"},
+    {type:"bar", name:"MACD hist", data:tab.macd.hist, xAxisIndex:1, yAxisIndex:1,
+     itemStyle:{color: p => (p.value >= 0 ? C.up : C.dn), opacity:.65}},
+    {type:"line", name:"MACD", data:tab.macd.line, xAxisIndex:1, yAxisIndex:1,
+     lineStyle:{width:1.4, color:C.macd}, symbol:"none"},
+    {type:"line", name:"Signal", data:tab.macd.sig, xAxisIndex:1, yAxisIndex:1,
+     lineStyle:{width:1.2, color:C.sig}, symbol:"none"},
+    {type:"bar", name:"EWO", data:(tab.ewo || []), xAxisIndex:2, yAxisIndex:2,
+     itemStyle:{color: p => (p.value >= 0 ? C.up : C.dn), opacity:.65}},
+    {type:"line", name:"RSI", data:tab.rsi, xAxisIndex:3, yAxisIndex:3,
+     lineStyle:{width:1.4, color:C.rsi}, symbol:"none",
+     markLine:{silent:true, symbol:"none", label:{show:false},
+       lineStyle:{color:C.mut, width:.7, type:"dashed"},
+       data:[{yAxis:30},{yAxis:70}]}},
+    {type:"line", name:"MFI", data:tab.mfi, xAxisIndex:3, yAxisIndex:3,
+     lineStyle:{width:1.4, color:C.mfi}, symbol:"none"},
+  ];
+
+  if (tab.pivots) {
+    const ix = {}; tab.bars.forEach((b, i) => ix[b[0]] = i);
+    const lastFew = tab.pivots.slice(-8).map(p => p.t);
+    series.push({
+      type:"scatter", name:"pivots", xAxisIndex:0, yAxisIndex:0,
+      data: tab.pivots.filter(p => ix[p.t] !== undefined).map(p => ({
+        value: [ix[p.t], p.p],
+        symbol: p.kind === "high" ? "triangle" : "triangle",
+        symbolRotate: p.kind === "high" ? 180 : 0,
+        itemStyle: {color: (p.label === "HH" || p.label === "HL") ? C.up : C.dn},
+        label: {show: lastFew.includes(p.t), formatter: p.label,
+          position: p.kind === "high" ? "top" : "bottom",
+          color: C.ink2, fontSize: 10},
+      })),
+      symbolSize: 8, z: 10,
+    });
+  }
+
+  chart.setOption({
+    backgroundColor: "transparent",
+    animation: false,
+    axisPointer: {link: [{xAxisIndex: "all"}],
+      lineStyle: {color: C.mut}, label: {backgroundColor: C.surface, color: C.ink}},
+    tooltip: {trigger:"axis", axisPointer:{type:"cross"},
+      backgroundColor: C.surface, borderColor: C.grid,
+      textStyle: {color: C.ink, fontSize: 12},
+      valueFormatter: v => (typeof v === "number" ? v.toLocaleString() : v)},
+    grid: [
+      {left:52, right:14, top:26, height:"36%"},
+      {left:52, right:14, top:"47%", height:"12%"},
+      {left:52, right:14, top:"62%", height:"12%"},
+      {left:52, right:14, top:"77%", height:"14%"}],
+    xAxis: [0,1,2,3].map(i => ({type:"category", data:labels, gridIndex:i,
+      boundaryGap:true, axisLine:{lineStyle:{color:C.grid}},
+      axisLabel: i === 3 ? {color:C.mut, fontSize:10} : {show:false},
+      axisTick:{show:false}})),
+    yAxis: [
+      {gridIndex:0, scale:true,
+       min: v => +(v.min * 0.97).toPrecision(3),
+       max: v => +(v.max * 1.02).toPrecision(3),
+       axisLabel:{color:C.mut, fontSize:10},
+       splitLine:{lineStyle:{color:C.grid}}},
+      {gridIndex:1, scale:true, axisLabel:{color:C.mut, fontSize:10},
+       splitLine:{show:false}},
+      {gridIndex:2, scale:true, axisLabel:{color:C.mut, fontSize:10},
+       splitLine:{show:false}},
+      {gridIndex:3, min:0, max:100, interval:25,
+       axisLabel:{color:C.mut, fontSize:10}, splitLine:{show:false}}],
+    dataZoom: [
+      {type:"inside", xAxisIndex:[0,1,2,3], start:start, end:100,
+       moveOnMouseMove:true, zoomOnMouseWheel:true},
+      {type:"slider", xAxisIndex:[0,1,2,3], start:start, end:100, bottom:4,
+       height:13, borderColor:C.grid, textStyle:{color:C.mut, fontSize:9}}],
+    legend: {show:true, top:0, right:8, textStyle:{color:C.ink2, fontSize:10},
+      data:["BB up","MACD","Signal","EWO","RSI","MFI"], itemWidth:14, itemHeight:8},
+    series: series,
+  }, true);
+}
+</script></body></html>

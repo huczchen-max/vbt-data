@@ -1,0 +1,69 @@
+name: Fetch market data
+
+on:
+  schedule:
+    # 21:45 UTC ≈ 5:45pm ET, weekdays — after US market close
+    - cron: "45 21 * * 1-5"
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: ["site/**", ".github/workflows/fetch.yml"]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fetch-and-pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install yfinance pandas
+      - name: Get private pipeline
+        env:
+          PRIVATE_REPO_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+        run: git clone -q "https://x-access-token:${PRIVATE_REPO_TOKEN}@github.com/huczchen-max/vbt-private.git" private
+      - run: python private/fetch_data.py
+      - run: python private/compute_signals.py
+      - name: Paper trading (skips without Alpaca secrets)
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        run: |
+          PAPER_STATE_DIR=private python private/trade_paper.py
+          cd private
+          git config user.name "vbt-bot"
+          git config user.email "actions@github.com"
+          git add paper.json
+          git diff --cached --quiet || git commit -m "paper: $(date -u +%F)"
+          git push
+      - name: Commit data
+        run: |
+          git config user.name "vbt-bot"
+          git config user.email "actions@github.com"
+          git add data/ docs/
+          git diff --cached --quiet || git commit -m "data: $(date -u +%F)"
+          git push
+      - name: Build site
+        run: |
+          mkdir -p _site
+          cp -r docs/. _site/
+          cp -r site/. _site/
+          python private/chart_data.py --out _site/charts
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
