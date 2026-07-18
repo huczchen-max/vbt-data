@@ -41,6 +41,12 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           PAPER_STATE_DIR: private
         run: python private/llm_screen.py
+      - name: GDELT trickle (6 events/night toward narrative-study coverage)
+        run: |
+          if [ -d private ]; then
+            python private/narrative_study.py --out private/gdelt_raw.json --max-events 6 >> private/study_log.txt 2>&1 || true
+            tail -1 private/study_log.txt
+          fi
       - name: Paper trading (skips without Alpaca secrets)
         env:
           ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
