@@ -36,6 +36,11 @@ jobs:
         run: git clone -q "https://x-access-token:${PRIVATE_REPO_TOKEN}@github.com/huczchen-max/vbt-private.git" private
       - run: python private/fetch_data.py
       - run: python private/compute_signals.py
+      - name: LLM screen (shadow mode; skips without API key or signals)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PAPER_STATE_DIR: private
+        run: python private/llm_screen.py
       - name: Paper trading (skips without Alpaca secrets)
         env:
           ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
@@ -45,7 +50,7 @@ jobs:
           cd private
           git config user.name "vbt-bot"
           git config user.email "actions@github.com"
-          git add paper.json
+          git add -A
           git diff --cached --quiet || git commit -m "paper: $(date -u +%F)"
           git push
       - name: Commit data
