@@ -1,0 +1,29 @@
+name: Narrative study
+
+on:
+  push:
+    paths: ["study-trigger.txt"]
+
+permissions:
+  contents: write
+
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run study and commit raw data to private repo
+        env:
+          TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+        run: |
+          git clone -q "https://x-access-token:${TOKEN}@github.com/huczchen-max/vbt-private.git" private
+          python private/narrative_study.py --out private/gdelt_raw.json
+          cd private
+          git config user.name "vbt-bot"
+          git config user.email "actions@github.com"
+          git add gdelt_raw.json
+          git diff --cached --quiet || git commit -m "narrative study: gdelt raw data"
+          git push
