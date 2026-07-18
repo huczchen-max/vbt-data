@@ -20,10 +20,11 @@ jobs:
           TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
         run: |
           git clone -q "https://x-access-token:${TOKEN}@github.com/huczchen-max/vbt-private.git" private
-          python private/narrative_study.py --out private/gdelt_raw.json
+          python private/narrative_study.py --out private/gdelt_raw.json > private/study_log.txt 2>&1 || echo "script exited nonzero" >> private/study_log.txt
+          tail -5 private/study_log.txt
           cd private
           git config user.name "vbt-bot"
           git config user.email "actions@github.com"
-          git add gdelt_raw.json
-          git diff --cached --quiet || git commit -m "narrative study: gdelt raw data"
+          git add -A
+          git diff --cached --quiet || git commit -m "narrative study: raw data + log"
           git push
