@@ -1,0 +1,35 @@
+name: Thesis fundamentals (one-off)
+
+on:
+  push:
+    branches: [main]
+    paths: ["thesis-trigger.txt", ".github/workflows/thesis.yml"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: thesis-fundamentals
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install yfinance pandas
+      - name: Get private pipeline
+        env:
+          PRIVATE_REPO_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+        run: git clone -q "https://x-access-token:${PRIVATE_REPO_TOKEN}@github.com/huczchen-max/vbt-private.git" private
+      - run: python private/thesis_fundamentals.py
+      - name: Commit results to private repo
+        run: |
+          cd private
+          git config user.name "vbt-bot"
+          git config user.email "actions@github.com"
+          git add thesis_fundamentals.csv
+          git diff --cached --quiet || git commit -m "thesis fundamentals: $(date -u +%F)"
+          git push
