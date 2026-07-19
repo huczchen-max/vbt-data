@@ -1,0 +1,44 @@
+name: L23 lab (one-off)
+
+on:
+  push:
+    branches: [main]
+    paths: ["l23-trigger.txt", ".github/workflows/l1.yml"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: l23-lab
+  cancel-in-progress: false
+
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install yfinance pandas
+      - name: Get private pipeline
+        env:
+          PRIVATE_REPO_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+        run: git clone -q "https://x-access-token:${PRIVATE_REPO_TOKEN}@github.com/huczchen-max/vbt-private.git" private
+      - name: Run L1 lab (log captured either way)
+        run: |
+          if python private/l23_study.py > private/l23_run.log 2>&1; then
+            echo "status=ok" >> private/l23_run.log
+          else
+            echo "status=FAILED" >> private/l23_run.log
+          fi
+          tail -5 private/l23_run.log
+      - name: Commit results to private repo
+        run: |
+          cd private
+          git config user.name "vbt-bot"
+          git config user.email "actions@github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "l23: $(date -u +%F)"
+          git pull --rebase -X ours || true
+          git push
