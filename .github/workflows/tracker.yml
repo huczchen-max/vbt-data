@@ -35,6 +35,16 @@ jobs:
             echo "status=FAILED" >> private/tracker_run.log
           fi
           tail -5 private/tracker_run.log
+      - name: Exhaustion watch (mechanical layer)
+        run: |
+          python private/exhaustion_watch.py >> private/tracker_run.log 2>&1 || true
+          tail -12 private/tracker_run.log
+      - name: Exhaustion watch (LLM narrative layer)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python private/exhaustion_llm.py >> private/tracker_run.log 2>&1 || true
+          tail -8 private/tracker_run.log
       - name: Commit results to private repo
         run: |
           cd private
