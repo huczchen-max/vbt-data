@@ -47,6 +47,8 @@ jobs:
             python private/narrative_study.py --out private/gdelt_raw.json --max-events 6 >> private/study_log.txt 2>&1 || true
             tail -1 private/study_log.txt
           fi
+      - name: IV snapshot (Phase 4a — builds our own IV-rank history)
+        run: python private/iv_log.py || true
       - name: Paper trading (skips without Alpaca secrets)
         env:
           ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
