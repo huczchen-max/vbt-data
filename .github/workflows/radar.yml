@@ -1,0 +1,39 @@
+name: Breakout radar (weekly)
+
+on:
+  schedule:
+    # Saturday 02:00 UTC — after Friday's close, full week complete
+    - cron: "0 2 * * 6"
+  push:
+    branches: [main]
+    paths: ["radar-trigger.txt", ".github/workflows/radar.yml"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: breakout-radar
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install yfinance pandas
+      - name: Get private pipeline
+        env:
+          PRIVATE_REPO_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+        run: git clone -q "https://x-access-token:${PRIVATE_REPO_TOKEN}@github.com/huczchen-max/vbt-private.git" private
+      - run: python private/breakout_radar.py
+      - name: Commit results to private repo
+        run: |
+          cd private
+          git config user.name "vbt-bot"
+          git config user.email "actions@github.com"
+          git add radar_latest.json radar_log.csv
+          git diff --cached --quiet || git commit -m "radar: $(date -u +%F)"
+          git push
