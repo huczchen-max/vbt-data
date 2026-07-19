@@ -28,12 +28,20 @@ jobs:
         env:
           PRIVATE_REPO_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
         run: git clone -q "https://x-access-token:${PRIVATE_REPO_TOKEN}@github.com/huczchen-max/vbt-private.git" private
-      - run: python private/breakout_radar.py
+      - name: Run radar (log captured either way)
+        run: |
+          if python private/breakout_radar.py > private/radar_run.log 2>&1; then
+            echo "status=ok" >> private/radar_run.log
+          else
+            echo "status=FAILED" >> private/radar_run.log
+          fi
+          tail -5 private/radar_run.log
       - name: Commit results to private repo
         run: |
           cd private
           git config user.name "vbt-bot"
           git config user.email "actions@github.com"
-          git add radar_latest.json radar_log.csv radar_watch.json
+          git add -A
           git diff --cached --quiet || git commit -m "radar: $(date -u +%F)"
+          git pull --rebase -X ours || true
           git push
