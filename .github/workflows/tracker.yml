@@ -45,6 +45,10 @@ jobs:
         run: |
           python private/exhaustion_llm.py >> private/tracker_run.log 2>&1 || true
           tail -8 private/tracker_run.log
+      - name: Options engine (4c — proposes, never executes)
+        run: |
+          python private/options_engine.py >> private/tracker_run.log 2>&1 || true
+          tail -10 private/tracker_run.log
       - name: Commit results to private repo
         run: |
           cd private
