@@ -49,6 +49,13 @@ jobs:
         run: |
           python private/options_engine.py >> private/tracker_run.log 2>&1 || true
           tail -10 private/tracker_run.log
+      - name: VBT-2 thesis paper portfolio (shared Alpaca account, vbt2- tags)
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        run: |
+          python private/trade_thesis.py >> private/tracker_run.log 2>&1 || true
+          tail -8 private/tracker_run.log
       - name: Commit results to private repo
         run: |
           cd private
