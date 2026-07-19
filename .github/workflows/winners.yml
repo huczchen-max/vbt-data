@@ -1,0 +1,62 @@
+name: Winner screen (weekly quant + quarterly LLM)
+
+on:
+  schedule:
+    # Saturday 04:30 UTC — after the radar's 02:00 run
+    - cron: "30 4 * * 6"
+  push:
+    branches: [main]
+    paths: ["winners-trigger.txt", ".github/workflows/winners.yml"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: winner-screen
+  cancel-in-progress: false
+
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install yfinance pandas
+      - name: Get private pipeline
+        env:
+          PRIVATE_REPO_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+        run: git clone -q "https://x-access-token:${PRIVATE_REPO_TOKEN}@github.com/huczchen-max/vbt-private.git" private
+      - name: Quant screen (log captured either way)
+        run: |
+          if python private/winner_screen.py > private/winners_run.log 2>&1; then
+            echo "status=ok" >> private/winners_run.log
+          else
+            echo "status=FAILED" >> private/winners_run.log
+          fi
+          tail -8 private/winners_run.log
+      - name: LLM rubric (runs when trigger file contains "llm", or in Jan/Apr/Jul/Oct first Saturday)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          WANT=no
+          if [ -f winners-trigger.txt ] && grep -q llm winners-trigger.txt; then WANT=yes; fi
+          M=$(date -u +%m); D=$(date -u +%d)
+          case "$M" in 01|04|07|10) if [ "$D" -le 07 ]; then WANT=yes; fi;; esac
+          if [ "$WANT" = yes ]; then
+            python private/winner_llm.py >> private/winners_run.log 2>&1 || true
+            tail -20 private/winners_run.log
+          else
+            echo "LLM rubric: skipped (not scheduled)"
+          fi
+      - name: Commit results to private repo
+        run: |
+          cd private
+          git config user.name "vbt-bot"
+          git config user.email "actions@github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "winners: $(date -u +%F)"
+          git pull --rebase -X ours || true
+          git push
