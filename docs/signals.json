@@ -1,6 +1,6 @@
 {
- "as_of": "2026-07-28",
- "updated_utc": "2026-07-28T07:47:18+00:00",
+ "as_of": "2026-07-29",
+ "updated_utc": "2026-07-29T08:02:13+00:00",
  "counts": {
   "Intact": 25,
   "Downtrend": 2,
@@ -8,44 +8,7 @@
   "CONFIRMED": 10,
   "Recovered": 0
  },
- "transitions": [
-  {
-   "ticker": "INTC",
-   "date": "2026-07-28",
-   "from": 0,
-   "to": 3,
-   "from_name": "Intact",
-   "to_name": "CONFIRMED",
-   "alert": true
-  },
-  {
-   "ticker": "COHR",
-   "date": "2026-07-28",
-   "from": 0,
-   "to": 3,
-   "from_name": "Intact",
-   "to_name": "CONFIRMED",
-   "alert": true
-  },
-  {
-   "ticker": "GLXY",
-   "date": "2026-07-28",
-   "from": 1,
-   "to": 2,
-   "from_name": "Downtrend",
-   "to_name": "Base building",
-   "alert": false
-  },
-  {
-   "ticker": "NBIS",
-   "date": "2026-07-28",
-   "from": 1,
-   "to": 2,
-   "from_name": "Downtrend",
-   "to_name": "Base building",
-   "alert": false
-  }
- ],
+ "transitions": [],
  "rows": [
   {
    "price": 70.79,
@@ -516,7 +479,7 @@
    "quality": false
   },
   {
-   "price": 1655.26,
+   "price": 1653.11,
    "dd": -14.2,
    "max_dd_26w": -14.2,
    "stage": 0,
