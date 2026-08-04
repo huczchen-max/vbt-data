@@ -1,6 +1,6 @@
 {
- "as_of": "2026-08-01",
- "updated_utc": "2026-08-01T06:49:14+00:00",
+ "as_of": "2026-08-04",
+ "updated_utc": "2026-08-04T07:48:04+00:00",
  "counts": {
   "Intact": 21,
   "Downtrend": 2,
@@ -8,17 +8,7 @@
   "CONFIRMED": 13,
   "Recovered": 0
  },
- "transitions": [
-  {
-   "ticker": "KLAC",
-   "date": "2026-08-01",
-   "from": 3,
-   "to": 0,
-   "from_name": "CONFIRMED",
-   "to_name": "Intact",
-   "alert": true
-  }
- ],
+ "transitions": [],
  "rows": [
   {
    "price": 71.77,
@@ -398,7 +388,7 @@
    "quality": true
   },
   {
-   "price": 134.29,
+   "price": 133.81,
    "dd": -24.8,
    "max_dd_26w": -29.8,
    "stage": 0,
