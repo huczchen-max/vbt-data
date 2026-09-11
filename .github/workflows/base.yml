@@ -1,0 +1,91 @@
+name: Base-pattern study (EODHD)
+
+# Trigger: commit base-trigger.txt whose FIRST WORD is the mode:
+#   smoke  - prove the EODHD key works (5 tickers), no study
+#   full   - full universe pull (incl. delisted) -> cache -> study
+#   topup  - bulk last-day top-up of the cache -> study
+#   study  - study only, on the cached data
+# The parquet cache lives in the Actions cache (not in git). Results
+# (base_events.csv, base_live.csv, base_summary.json, base_run.log) are
+# committed to vbt-private.
+
+on:
+  push:
+    branches: [main]
+    paths: ["base-trigger.txt", ".github/workflows/base.yml"]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "smoke | full | topup | study"
+        default: "study"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: base-study
+  cancel-in-progress: false
+
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
+      EODHD_CACHE_DIR: ${{ github.workspace }}/eodhd_cache
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q pandas pyarrow numpy
+
+      - name: Resolve mode
+        id: mode
+        run: |
+          if [ -n "${{ github.event.inputs.mode }}" ]; then m="${{ github.event.inputs.mode }}"; else m=$(head -1 base-trigger.txt | awk '{print $1}'); fi
+          echo "mode=${m:-study}" >> "$GITHUB_OUTPUT"; echo "mode: $m"
+
+      - name: Get private pipeline
+        env:
+          PRIVATE_REPO_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+        run: git clone -q "https://x-access-token:${PRIVATE_REPO_TOKEN}@github.com/huczchen-max/vbt-private.git" private
+
+      - name: Restore EODHD cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: eodhd_cache
+          key: eodhd-v1-${{ github.run_id }}
+          restore-keys: eodhd-v1-
+
+      - name: Fetch (mode-dependent)
+        run: |
+          m="${{ steps.mode.outputs.mode }}"
+          case "$m" in
+            smoke) python private/eodhd_fetch.py --smoke ;;
+            full)  python private/eodhd_fetch.py --full ;;
+            topup) python private/eodhd_fetch.py --topup ;;
+            study) echo "study only (cache: $(ls -la eodhd_cache 2>/dev/null | wc -l) files)" ;;
+          esac
+
+      - name: Run study (log captured either way)
+        if: steps.mode.outputs.mode != 'smoke'
+        run: |
+          if python private/base_study_wide.py --prices eodhd_cache/eod_us.parquet --universe eodhd_cache/universe.csv --out private > private/base_run.log 2>&1; then
+            echo "status=ok" >> private/base_run.log
+          else
+            echo "status=FAILED" >> private/base_run.log
+          fi
+          tail -5 private/base_run.log
+
+      - name: Commit results to private repo
+        if: steps.mode.outputs.mode != 'smoke'
+        run: |
+          cd private
+          git config user.name "vbt-bot"
+          git config user.email "actions@github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "base-study: ${{ steps.mode.outputs.mode }} $(date -u +%F)"
+          git pull --rebase -X ours || true
+          git push
