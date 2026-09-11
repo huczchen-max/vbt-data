@@ -1,1 +1,1 @@
-smoke 2026-09-11 — prove EODHD key (5 tickers)
+full 2026-09-11 — full US universe incl. delisted, then study
