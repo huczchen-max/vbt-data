@@ -1,1 +1,1 @@
-fsmoke 2026-09-12 — verify fundamentals endpoint on the All-In-One plan (MRNA), no pull
+fund 2026-09-12 — full fundamentals pull (~18k calls) then fundamentals study
