@@ -1,1 +1,1 @@
-full 2026-09-11 — full US universe incl. delisted, then study
+study 2026-09-11 — v0.4: composite-trigger signals + SPY regime + tightness bins (MAD/median) + spring flag + live-screen fixes (cached data, no API pull)
