@@ -5,6 +5,9 @@ name: Base-pattern study (EODHD)
 #   full   - full universe pull (incl. delisted) -> cache -> study
 #   topup  - bulk last-day top-up of the cache -> study
 #   study  - study only, on the cached data
+#   fsmoke - prove the fundamentals endpoint/plan (MRNA), no pull
+#   fund   - pull fundamentals for the universe (~18k calls) -> cache -> fundamentals study
+#   fstudy - fundamentals study only (needs both caches)
 # The parquet cache lives in the Actions cache (not in git). Results
 # (base_events.csv, base_live.csv, base_summary.json, base_run.log) are
 # committed to vbt-private.
@@ -16,7 +19,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "smoke | full | topup | study"
+        description: "smoke | full | topup | study | fsmoke | fund | fstudy"
         default: "study"
 
 permissions:
@@ -67,10 +70,13 @@ jobs:
             full)  python private/eodhd_fetch.py --full ;;
             topup) python private/eodhd_fetch.py --topup ;;
             study) echo "study only (cache: $(ls -la eodhd_cache 2>/dev/null | wc -l) files)" ;;
+            fsmoke) python private/fund_fetch.py --smoke ;;
+            fund)  python private/fund_fetch.py --full ;;
+            fstudy) echo "fundamentals study only" ;;
           esac
 
       - name: Run study (log captured either way)
-        if: steps.mode.outputs.mode != 'smoke'
+        if: steps.mode.outputs.mode == 'full' || steps.mode.outputs.mode == 'topup' || steps.mode.outputs.mode == 'study'
         run: |
           if python private/base_study_wide.py --prices eodhd_cache/eod_us.parquet --universe eodhd_cache/universe.csv --out private > private/base_run.log 2>&1; then
             echo "status=ok" >> private/base_run.log
@@ -79,8 +85,18 @@ jobs:
           fi
           tail -5 private/base_run.log
 
+      - name: Run fundamentals study (log captured either way)
+        if: steps.mode.outputs.mode == 'fund' || steps.mode.outputs.mode == 'fstudy'
+        run: |
+          if python private/base_fund_study.py --cache eodhd_cache --in private --out private > private/base_fund_run.log 2>&1; then
+            echo "status=ok" >> private/base_fund_run.log
+          else
+            echo "status=FAILED" >> private/base_fund_run.log
+          fi
+          tail -5 private/base_fund_run.log
+
       - name: Commit results to private repo
-        if: steps.mode.outputs.mode != 'smoke'
+        if: steps.mode.outputs.mode != 'smoke' && steps.mode.outputs.mode != 'fsmoke'
         run: |
           cd private
           git config user.name "vbt-bot"
