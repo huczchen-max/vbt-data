@@ -39,6 +39,7 @@ jobs:
       - name: LLM screen (shadow mode; skips without API key or signals)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LLM_MODEL: ${{ vars.LLM_MODEL || 'claude-sonnet-5' }}
           PAPER_STATE_DIR: private
         run: python private/llm_screen.py
       - name: GDELT trickle (6 events/night toward narrative-study coverage)

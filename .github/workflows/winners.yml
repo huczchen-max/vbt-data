@@ -40,6 +40,7 @@ jobs:
       - name: LLM rubric (runs when trigger file contains "llm", or in Jan/Apr/Jul/Oct first Saturday)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LLM_MODEL: ${{ vars.LLM_MODEL || 'claude-sonnet-5' }}
         run: |
           WANT=no
           if [ -f winners-trigger.txt ] && grep -q llm winners-trigger.txt; then WANT=yes; fi
