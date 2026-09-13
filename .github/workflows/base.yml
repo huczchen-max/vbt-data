@@ -6,7 +6,7 @@ name: Base-pattern study (EODHD)
 #   topup  - bulk last-day top-up of the cache -> study
 #   study  - study only, on the cached data
 #   fsmoke - prove the fundamentals endpoint/plan (MRNA), no pull
-#   fund   - pull fundamentals for the universe (~18k calls) -> cache -> fundamentals study
+#   fund   - pull fundamentals (10 API calls each, 100k/day cap -> ~9.5k tickers/run; resumes; study runs once complete)
 #   fstudy - fundamentals study only (needs both caches)
 # The parquet cache lives in the Actions cache (not in git). Results
 # (base_events.csv, base_live.csv, base_summary.json, base_run.log) are
@@ -41,7 +41,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -q pandas pyarrow numpy
+      - run: pip install -q pandas pyarrow numpy matplotlib
 
       - name: Resolve mode
         id: mode
@@ -71,7 +71,8 @@ jobs:
             topup) python private/eodhd_fetch.py --topup ;;
             study) echo "study only (cache: $(ls -la eodhd_cache 2>/dev/null | wc -l) files)" ;;
             fsmoke) python private/fund_fetch.py --smoke ;;
-            fund)  python private/fund_fetch.py --full ;;
+            fund)  if python private/fund_fetch.py --full > private/fund_fetch.log 2>&1; then echo "status=ok" >> private/fund_fetch.log; else echo "status=FAILED" >> private/fund_fetch.log; fi
+                   tail -6 private/fund_fetch.log ;;
             fstudy) echo "fundamentals study only" ;;
           esac
 
@@ -84,10 +85,15 @@ jobs:
             echo "status=FAILED" >> private/base_run.log
           fi
           tail -5 private/base_run.log
+          mkdir -p private/gallery && rm -f private/gallery/*.png
+          python private/gallery_wide.py --prices eodhd_cache/eod_us.parquet --in private --out private/gallery >> private/base_run.log 2>&1 || echo "gallery failed" >> private/base_run.log
 
       - name: Run fundamentals study (log captured either way)
         if: steps.mode.outputs.mode == 'fund' || steps.mode.outputs.mode == 'fstudy'
         run: |
+          if [ "${{ steps.mode.outputs.mode }}" = "fund" ] && [ ! -f eodhd_cache/fund_done.flag ]; then
+            echo "fundamentals pull PARTIAL (daily quota) — study skipped; re-trigger 'fund' tomorrow" | tee private/base_fund_run.log; exit 0
+          fi
           if python private/base_fund_study.py --cache eodhd_cache --in private --out private > private/base_fund_run.log 2>&1; then
             echo "status=ok" >> private/base_fund_run.log
           else

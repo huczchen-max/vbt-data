@@ -1,1 +1,1 @@
-fund 2026-09-12 — full fundamentals pull (~18k calls) then fundamentals study
+study 2026-09-12 v0.6 — contraction tightness, volume dry-up, relative tightness, 52-wk horizon, risk-adjusted bins (study only, cached data)
