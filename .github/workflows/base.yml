@@ -92,9 +92,13 @@ jobs:
         if: steps.mode.outputs.mode == 'fund' || steps.mode.outputs.mode == 'fstudy'
         run: |
           if [ "${{ steps.mode.outputs.mode }}" = "fund" ] && [ ! -f eodhd_cache/fund_done.flag ]; then
-            echo "fundamentals pull PARTIAL (daily quota) — study skipped; re-trigger 'fund' tomorrow" | tee private/base_fund_run.log; exit 0
+            if [ -f eodhd_cache/fund_listed_done.flag ]; then
+              echo "NOTE: fundamentals pull PARTIAL — listed names complete, delisted pending; study below is listed-biased. Re-trigger 'fund' tomorrow." | tee private/base_fund_run.log
+            else
+              echo "fundamentals pull PARTIAL (daily quota) — listed names not yet complete; study skipped; re-trigger 'fund' tomorrow" | tee private/base_fund_run.log; exit 0
+            fi
           fi
-          if python private/base_fund_study.py --cache eodhd_cache --in private --out private > private/base_fund_run.log 2>&1; then
+          if python private/base_fund_study.py --cache eodhd_cache --in private --out private >> private/base_fund_run.log 2>&1; then
             echo "status=ok" >> private/base_fund_run.log
           else
             echo "status=FAILED" >> private/base_fund_run.log
