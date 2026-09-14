@@ -71,7 +71,7 @@ jobs:
             topup) python private/eodhd_fetch.py --topup ;;
             study) echo "study only (cache: $(ls -la eodhd_cache 2>/dev/null | wc -l) files)" ;;
             fsmoke) python private/fund_fetch.py --smoke ;;
-            fund)  if python private/fund_fetch.py --full > private/fund_fetch.log 2>&1; then echo "status=ok" >> private/fund_fetch.log; else echo "status=FAILED" >> private/fund_fetch.log; fi
+            fund)  if python private/fund_fetch.py --full --needed-from private > private/fund_fetch.log 2>&1; then echo "status=ok" >> private/fund_fetch.log; else echo "status=FAILED" >> private/fund_fetch.log; fi
                    tail -6 private/fund_fetch.log ;;
             fstudy) echo "fundamentals study only" ;;
           esac

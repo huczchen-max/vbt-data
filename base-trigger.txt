@@ -1,1 +1,1 @@
-fund 2026-09-13 — resumable fundamentals pull, run 1b (NA-ticker fix; resumes from checkpoint)
+fund 2026-09-14 — fundamentals pull v0.6b: flattened-response parser, restricted to study tickers (~7.3k), single run once quota resets
