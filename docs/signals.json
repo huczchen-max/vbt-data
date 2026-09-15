@@ -1,47 +1,29 @@
 {
- "as_of": "2026-09-14",
- "updated_utc": "2026-09-14T23:59:11+00:00",
+ "as_of": "2026-09-15",
+ "updated_utc": "2026-09-15T23:41:40+00:00",
  "counts": {
-  "Intact": 17,
+  "Intact": 16,
   "Downtrend": 4,
   "Base building": 9,
-  "CONFIRMED": 17,
+  "CONFIRMED": 18,
   "Recovered": 0
  },
  "transitions": [
   {
-   "ticker": "AMAT",
-   "date": "2026-09-14",
+   "ticker": "LRCX",
+   "date": "2026-09-15",
    "from": 0,
    "to": 3,
    "from_name": "Intact",
    "to_name": "CONFIRMED",
    "alert": true
-  },
-  {
-   "ticker": "SMCI",
-   "date": "2026-09-14",
-   "from": 3,
-   "to": 2,
-   "from_name": "CONFIRMED",
-   "to_name": "Base building",
-   "alert": true
-  },
-  {
-   "ticker": "CRWV",
-   "date": "2026-09-14",
-   "from": 2,
-   "to": 1,
-   "from_name": "Base building",
-   "to_name": "Downtrend",
-   "alert": false
   }
  ],
  "rows": [
   {
-   "price": 24.58,
-   "dd": -48.0,
-   "max_dd_26w": -48.0,
+   "price": 23.42,
+   "dd": -50.5,
+   "max_dd_26w": -50.5,
    "stage": 3,
    "stage_name": "CONFIRMED",
    "state": "Uptrend",
@@ -52,9 +34,9 @@
    "quality": false
   },
   {
-   "price": 15.47,
-   "dd": -46.6,
-   "max_dd_26w": -47.0,
+   "price": 14.49,
+   "dd": -50.0,
+   "max_dd_26w": -50.0,
    "stage": 3,
    "stage_name": "CONFIRMED",
    "state": "Uptrend",
@@ -65,8 +47,8 @@
    "quality": false
   },
   {
-   "price": 239.01,
-   "dd": -45.6,
+   "price": 241.83,
+   "dd": -45.0,
    "max_dd_26w": -45.6,
    "stage": 3,
    "stage_name": "CONFIRMED",
@@ -78,35 +60,9 @@
    "quality": true
   },
   {
-   "price": 319.64,
-   "dd": -45.2,
-   "max_dd_26w": -45.2,
-   "stage": 3,
-   "stage_name": "CONFIRMED",
-   "state": "Uptrend",
-   "weeks_in_state": 11,
-   "since": "2026-07-10",
-   "ticker": "CIEN",
-   "group": "hw",
-   "quality": true
-  },
-  {
-   "price": 426.94,
-   "dd": -42.8,
-   "max_dd_26w": -42.8,
-   "stage": 3,
-   "stage_name": "CONFIRMED",
-   "state": "Uptrend",
-   "weeks_in_state": 9,
-   "since": "2026-07-24",
-   "ticker": "WDC",
-   "group": "hw",
-   "quality": true
-  },
-  {
-   "price": 16.96,
-   "dd": -41.8,
-   "max_dd_26w": -43.4,
+   "price": 16.04,
+   "dd": -45.0,
+   "max_dd_26w": -45.0,
    "stage": 3,
    "stage_name": "CONFIRMED",
    "state": "Uptrend",
@@ -117,21 +73,21 @@
    "quality": false
   },
   {
-   "price": 71.65,
-   "dd": -41.1,
-   "max_dd_26w": -41.1,
+   "price": 411.96,
+   "dd": -44.8,
+   "max_dd_26w": -44.8,
    "stage": 3,
    "stage_name": "CONFIRMED",
    "state": "Uptrend",
-   "weeks_in_state": 23,
-   "since": "2026-04-17",
-   "ticker": "ON",
-   "group": "semi",
+   "weeks_in_state": 9,
+   "since": "2026-07-24",
+   "ticker": "WDC",
+   "group": "hw",
    "quality": true
   },
   {
-   "price": 24.13,
-   "dd": -39.4,
+   "price": 22.29,
+   "dd": -44.0,
    "max_dd_26w": -55.7,
    "stage": 3,
    "stage_name": "CONFIRMED",
@@ -143,8 +99,34 @@
    "quality": false
   },
   {
-   "price": 257.04,
-   "dd": -38.4,
+   "price": 334.33,
+   "dd": -42.7,
+   "max_dd_26w": -45.0,
+   "stage": 3,
+   "stage_name": "CONFIRMED",
+   "state": "Uptrend",
+   "weeks_in_state": 11,
+   "since": "2026-07-10",
+   "ticker": "CIEN",
+   "group": "hw",
+   "quality": true
+  },
+  {
+   "price": 73.2,
+   "dd": -39.8,
+   "max_dd_26w": -40.3,
+   "stage": 3,
+   "stage_name": "CONFIRMED",
+   "state": "Uptrend",
+   "weeks_in_state": 23,
+   "since": "2026-04-17",
+   "ticker": "ON",
+   "group": "semi",
+   "quality": true
+  },
+  {
+   "price": 252.54,
+   "dd": -39.4,
    "max_dd_26w": -54.1,
    "stage": 3,
    "stage_name": "CONFIRMED",
@@ -156,22 +138,9 @@
    "quality": true
   },
   {
-   "price": 169.09,
-   "dd": -34.8,
-   "max_dd_26w": -34.8,
-   "stage": 3,
-   "stage_name": "CONFIRMED",
-   "state": "Uptrend",
-   "weeks_in_state": 42,
-   "since": "2025-12-05",
-   "ticker": "KLAC",
-   "group": "semi",
-   "quality": true
-  },
-  {
-   "price": 286.52,
-   "dd": -34.7,
-   "max_dd_26w": -34.7,
+   "price": 282.15,
+   "dd": -35.7,
+   "max_dd_26w": -35.7,
    "stage": 3,
    "stage_name": "CONFIRMED",
    "state": "Uptrend",
@@ -182,9 +151,22 @@
    "quality": false
   },
   {
-   "price": 424.21,
-   "dd": -32.3,
-   "max_dd_26w": -32.3,
+   "price": 168.02,
+   "dd": -35.2,
+   "max_dd_26w": -35.2,
+   "stage": 3,
+   "stage_name": "CONFIRMED",
+   "state": "Uptrend",
+   "weeks_in_state": 42,
+   "since": "2025-12-05",
+   "ticker": "KLAC",
+   "group": "semi",
+   "quality": true
+  },
+  {
+   "price": 421.17,
+   "dd": -32.7,
+   "max_dd_26w": -32.7,
    "stage": 3,
    "stage_name": "CONFIRMED",
    "state": "Uptrend",
@@ -195,8 +177,8 @@
    "quality": true
   },
   {
-   "price": 266.5,
-   "dd": -31.6,
+   "price": 271.17,
+   "dd": -30.4,
    "max_dd_26w": -32.5,
    "stage": 3,
    "stage_name": "CONFIRMED",
@@ -208,8 +190,21 @@
    "quality": false
   },
   {
-   "price": 218.82,
-   "dd": -29.5,
+   "price": 270.87,
+   "dd": -30.4,
+   "max_dd_26w": -30.4,
+   "stage": 3,
+   "stage_name": "CONFIRMED",
+   "state": "Uptrend",
+   "weeks_in_state": 23,
+   "since": "2026-04-17",
+   "ticker": "LRCX",
+   "group": "semi",
+   "quality": true
+  },
+  {
+   "price": 221.7,
+   "dd": -28.6,
    "max_dd_26w": -39.6,
    "stage": 3,
    "stage_name": "CONFIRMED",
@@ -221,20 +216,20 @@
    "quality": true
   },
   {
-   "price": 180.15,
-   "dd": -27.6,
-   "max_dd_26w": -41.0,
+   "price": 207.37,
+   "dd": -27.7,
+   "max_dd_26w": -38.0,
    "stage": 3,
    "stage_name": "CONFIRMED",
    "state": "Uptrend",
-   "weeks_in_state": 2,
-   "since": "2026-09-11",
-   "ticker": "QCOM",
-   "group": "semi",
-   "quality": true
+   "weeks_in_state": 3,
+   "since": "2026-09-04",
+   "ticker": "NBIS",
+   "group": "neocloud",
+   "quality": false
   },
   {
-   "price": 97.19,
+   "price": 97.14,
    "dd": -27.5,
    "max_dd_26w": -33.2,
    "stage": 3,
@@ -247,22 +242,22 @@
    "quality": false
   },
   {
-   "price": 212.19,
-   "dd": -26.0,
-   "max_dd_26w": -38.0,
+   "price": 187.8,
+   "dd": -24.5,
+   "max_dd_26w": -41.0,
    "stage": 3,
    "stage_name": "CONFIRMED",
    "state": "Uptrend",
-   "weeks_in_state": 3,
-   "since": "2026-09-04",
-   "ticker": "NBIS",
-   "group": "neocloud",
-   "quality": false
+   "weeks_in_state": 2,
+   "since": "2026-09-11",
+   "ticker": "QCOM",
+   "group": "semi",
+   "quality": true
   },
   {
-   "price": 15.64,
-   "dd": -46.4,
-   "max_dd_26w": -48.0,
+   "price": 15.09,
+   "dd": -48.3,
+   "max_dd_26w": -48.3,
    "stage": 2,
    "stage_name": "Base building",
    "state": "Mixed",
@@ -273,8 +268,8 @@
    "quality": false
   },
   {
-   "price": 150.09,
-   "dd": -44.8,
+   "price": 150.39,
+   "dd": -44.7,
    "max_dd_26w": -49.2,
    "stage": 2,
    "stage_name": "Base building",
@@ -286,9 +281,9 @@
    "quality": true
   },
   {
-   "price": 170.7,
-   "dd": -44.8,
-   "max_dd_26w": -44.8,
+   "price": 171.37,
+   "dd": -44.6,
+   "max_dd_26w": -44.6,
    "stage": 2,
    "stage_name": "Base building",
    "state": "Mixed",
@@ -299,8 +294,8 @@
    "quality": true
   },
   {
-   "price": 182.18,
-   "dd": -38.7,
+   "price": 178.87,
+   "dd": -39.8,
    "max_dd_26w": -40.3,
    "stage": 2,
    "stage_name": "Base building",
@@ -312,9 +307,9 @@
    "quality": false
   },
   {
-   "price": 237.39,
-   "dd": -36.0,
-   "max_dd_26w": -36.0,
+   "price": 234.61,
+   "dd": -36.7,
+   "max_dd_26w": -36.7,
    "stage": 2,
    "stage_name": "Base building",
    "state": "Mixed",
@@ -325,8 +320,8 @@
    "quality": true
   },
   {
-   "price": 43.17,
-   "dd": -32.1,
+   "price": 41.58,
+   "dd": -34.6,
    "max_dd_26w": -47.1,
    "stage": 2,
    "stage_name": "Base building",
@@ -338,8 +333,8 @@
    "quality": false
   },
   {
-   "price": 36.74,
-   "dd": -30.5,
+   "price": 35.64,
+   "dd": -32.6,
    "max_dd_26w": -61.2,
    "stage": 2,
    "stage_name": "Base building",
@@ -351,21 +346,8 @@
    "quality": false
   },
   {
-   "price": 381.43,
-   "dd": -27.4,
-   "max_dd_26w": -39.7,
-   "stage": 2,
-   "stage_name": "Base building",
-   "state": "Mixed",
-   "weeks_in_state": 5,
-   "since": "2026-08-21",
-   "ticker": "SNPS",
-   "group": "semi",
-   "quality": true
-  },
-  {
-   "price": 91.13,
-   "dd": -27.0,
+   "price": 87.09,
+   "dd": -30.2,
    "max_dd_26w": -36.4,
    "stage": 2,
    "stage_name": "Base building",
@@ -377,8 +359,21 @@
    "quality": false
   },
   {
-   "price": 82.98,
-   "dd": -40.1,
+   "price": 367.7,
+   "dd": -30.0,
+   "max_dd_26w": -39.7,
+   "stage": 2,
+   "stage_name": "Base building",
+   "state": "Mixed",
+   "weeks_in_state": 5,
+   "since": "2026-08-21",
+   "ticker": "SNPS",
+   "group": "semi",
+   "quality": true
+  },
+  {
+   "price": 80.92,
+   "dd": -41.5,
    "max_dd_26w": -59.2,
    "stage": 1,
    "stage_name": "Downtrend",
@@ -390,9 +385,9 @@
    "quality": false
   },
   {
-   "price": 108.47,
-   "dd": -39.1,
-   "max_dd_26w": -39.1,
+   "price": 105.99,
+   "dd": -40.5,
+   "max_dd_26w": -40.5,
    "stage": 1,
    "stage_name": "Downtrend",
    "state": "Downtrend",
@@ -403,21 +398,8 @@
    "quality": true
   },
   {
-   "price": 140.73,
-   "dd": -31.8,
-   "max_dd_26w": -35.3,
-   "stage": 1,
-   "stage_name": "Downtrend",
-   "state": "Downtrend",
-   "weeks_in_state": 13,
-   "since": "2026-06-26",
-   "ticker": "VST",
-   "group": "power",
-   "quality": false
-  },
-  {
-   "price": 264.57,
-   "dd": -31.6,
+   "price": 259.89,
+   "dd": -32.8,
    "max_dd_26w": -38.3,
    "stage": 1,
    "stage_name": "Downtrend",
@@ -429,9 +411,22 @@
    "quality": false
   },
   {
-   "price": 1143.24,
-   "dd": -29.8,
-   "max_dd_26w": -29.8,
+   "price": 141.53,
+   "dd": -31.4,
+   "max_dd_26w": -35.3,
+   "stage": 1,
+   "stage_name": "Downtrend",
+   "state": "Downtrend",
+   "weeks_in_state": 13,
+   "since": "2026-06-26",
+   "ticker": "VST",
+   "group": "power",
+   "quality": false
+  },
+  {
+   "price": 1142.46,
+   "dd": -29.9,
+   "max_dd_26w": -29.9,
    "stage": 0,
    "stage_name": "Intact",
    "state": "Uptrend",
@@ -442,22 +437,9 @@
    "quality": true
   },
   {
-   "price": 273.49,
-   "dd": -29.7,
-   "max_dd_26w": -29.7,
-   "stage": 0,
-   "stage_name": "Intact",
-   "state": "Uptrend",
-   "weeks_in_state": 23,
-   "since": "2026-04-17",
-   "ticker": "LRCX",
-   "group": "semi",
-   "quality": true
-  },
-  {
-   "price": 279.06,
-   "dd": -28.0,
-   "max_dd_26w": -28.8,
+   "price": 273.96,
+   "dd": -29.3,
+   "max_dd_26w": -29.3,
    "stage": 0,
    "stage_name": "Intact",
    "state": "Uptrend",
@@ -468,9 +450,9 @@
    "quality": true
   },
   {
-   "price": 805.55,
-   "dd": -24.7,
-   "max_dd_26w": -26.4,
+   "price": 771.81,
+   "dd": -27.8,
+   "max_dd_26w": -27.8,
    "stage": 0,
    "stage_name": "Intact",
    "state": "Uptrend",
@@ -481,21 +463,8 @@
    "quality": true
   },
   {
-   "price": 874.76,
-   "dd": -23.8,
-   "max_dd_26w": -23.8,
-   "stage": 0,
-   "stage_name": "Intact",
-   "state": "Uptrend",
-   "weeks_in_state": 10,
-   "since": "2026-07-17",
-   "ticker": "GEV",
-   "group": "power",
-   "quality": true
-  },
-  {
-   "price": 344.72,
-   "dd": -22.7,
+   "price": 339.27,
+   "dd": -23.9,
    "max_dd_26w": -25.1,
    "stage": 0,
    "stage_name": "Intact",
@@ -507,8 +476,21 @@
    "quality": true
   },
   {
-   "price": 622.02,
-   "dd": -19.2,
+   "price": 882.81,
+   "dd": -23.1,
+   "max_dd_26w": -23.1,
+   "stage": 0,
+   "stage_name": "Intact",
+   "state": "Uptrend",
+   "weeks_in_state": 10,
+   "since": "2026-07-17",
+   "ticker": "GEV",
+   "group": "power",
+   "quality": true
+  },
+  {
+   "price": 613.35,
+   "dd": -20.3,
    "max_dd_26w": -21.7,
    "stage": 0,
    "stage_name": "Intact",
@@ -520,8 +502,8 @@
    "quality": true
   },
   {
-   "price": 924.03,
-   "dd": -18.5,
+   "price": 927.6,
+   "dd": -18.2,
    "max_dd_26w": -27.4,
    "stage": 0,
    "stage_name": "Intact",
@@ -533,9 +515,9 @@
    "quality": true
   },
   {
-   "price": 1575.15,
-   "dd": -18.3,
-   "max_dd_26w": -18.3,
+   "price": 1591.48,
+   "dd": -17.4,
+   "max_dd_26w": -17.4,
    "stage": 0,
    "stage_name": "Intact",
    "state": "Uptrend",
@@ -546,8 +528,8 @@
    "quality": true
   },
   {
-   "price": 835.03,
-   "dd": -14.0,
+   "price": 838.96,
+   "dd": -13.6,
    "max_dd_26w": -26.5,
    "stage": 0,
    "stage_name": "Intact",
@@ -559,9 +541,9 @@
    "quality": true
   },
   {
-   "price": 393.16,
-   "dd": -12.9,
-   "max_dd_26w": -12.9,
+   "price": 392.4,
+   "dd": -13.1,
+   "max_dd_26w": -13.1,
    "stage": 0,
    "stage_name": "Intact",
    "state": "Mixed",
@@ -572,34 +554,8 @@
    "quality": true
   },
   {
-   "price": 493.41,
-   "dd": -11.6,
-   "max_dd_26w": -22.2,
-   "stage": 0,
-   "stage_name": "Intact",
-   "state": "Uptrend",
-   "weeks_in_state": 3,
-   "since": "2026-09-04",
-   "ticker": "AMD",
-   "group": "semi",
-   "quality": true
-  },
-  {
-   "price": 55.41,
-   "dd": -10.8,
-   "max_dd_26w": -16.0,
-   "stage": 0,
-   "stage_name": "Intact",
-   "state": "Mixed",
-   "weeks_in_state": 1,
-   "since": "2026-09-18",
-   "ticker": "HPE",
-   "group": "hw",
-   "quality": true
-  },
-  {
-   "price": 418.01,
-   "dd": -9.5,
+   "price": 413.75,
+   "dd": -10.5,
    "max_dd_26w": -13.8,
    "stage": 0,
    "stage_name": "Intact",
@@ -611,8 +567,34 @@
    "quality": true
   },
   {
-   "price": 210.96,
-   "dd": -8.3,
+   "price": 55.88,
+   "dd": -10.0,
+   "max_dd_26w": -16.0,
+   "stage": 0,
+   "stage_name": "Intact",
+   "state": "Mixed",
+   "weeks_in_state": 1,
+   "since": "2026-09-18",
+   "ticker": "HPE",
+   "group": "hw",
+   "quality": true
+  },
+  {
+   "price": 504.2,
+   "dd": -9.6,
+   "max_dd_26w": -22.2,
+   "stage": 0,
+   "stage_name": "Intact",
+   "state": "Uptrend",
+   "weeks_in_state": 3,
+   "since": "2026-09-04",
+   "ticker": "AMD",
+   "group": "semi",
+   "quality": true
+  },
+  {
+   "price": 212.17,
+   "dd": -7.8,
    "max_dd_26w": -17.3,
    "stage": 0,
    "stage_name": "Intact",
@@ -624,21 +606,8 @@
    "quality": true
   },
   {
-   "price": 187.81,
-   "dd": -5.9,
-   "max_dd_26w": -23.4,
-   "stage": 0,
-   "stage_name": "Intact",
-   "state": "Mixed",
-   "weeks_in_state": 17,
-   "since": "2026-05-29",
-   "ticker": "ANET",
-   "group": "hw",
-   "quality": true
-  },
-  {
-   "price": 534.28,
-   "dd": -5.8,
+   "price": 543.51,
+   "dd": -4.2,
    "max_dd_26w": -9.9,
    "stage": 0,
    "stage_name": "Intact",
@@ -646,6 +615,19 @@
    "weeks_in_state": 3,
    "since": "2026-09-04",
    "ticker": "DELL",
+   "group": "hw",
+   "quality": true
+  },
+  {
+   "price": 192.84,
+   "dd": -3.4,
+   "max_dd_26w": -23.4,
+   "stage": 0,
+   "stage_name": "Intact",
+   "state": "Mixed",
+   "weeks_in_state": 17,
+   "since": "2026-05-29",
+   "ticker": "ANET",
    "group": "hw",
    "quality": true
   }
